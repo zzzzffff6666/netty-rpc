@@ -6,7 +6,6 @@
 
     <groupId>com.zhang</groupId>
     <artifactId>netty-rpc</artifactId>
-    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -18,7 +17,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.69.Final</version>
+            <version>4.1.31.Final</version>
         </dependency>
 
         <dependency>
@@ -35,20 +34,14 @@
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
             <version>2.14.1</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <!--包含文件夹以及子文件夹下所有资源-->
-                    <include>**/*.*</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
 </project>

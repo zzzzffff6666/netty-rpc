@@ -9,11 +9,18 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 public class NettyClient {
+    private int writerIdleTime = 0;
+    private int readerIdleTime = 0;
+    private int allIdleTime = 60;
+
     private String host;
     private int port;
 
@@ -40,7 +47,9 @@ public class NettyClient {
                             socketChannel.pipeline()
                                     .addLast("preLength", preLength)
                                     .addLast("encoder", encoder)
+                                    .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 0))
                                     .addLast("decoder", decoder)
+                                    .addLast(new IdleStateHandler(readerIdleTime, writerIdleTime, allIdleTime, TimeUnit.SECONDS))
                                     .addLast("clientHandler", clientHandler);
                         }
                     });

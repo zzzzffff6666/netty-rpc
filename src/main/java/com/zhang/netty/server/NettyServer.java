@@ -9,14 +9,19 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class NettyServer {
-    private static final Logger log = LogManager.getLogger(NettyServer.class);
+    private int writerIdleTime = 0;
+    private int readerIdleTime = 0;
+    private int allIdleTime = 60;
 
     private int port;
 
@@ -25,9 +30,6 @@ public class NettyServer {
     }
 
     public void serve() throws Exception {
-        log.debug("Server start ******** DEBUG");
-        log.info("Server start ******** INFO");
-        log.error("Server start ******** ERROR");
         NioEventLoopGroup group = new NioEventLoopGroup();
         final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
@@ -45,7 +47,9 @@ public class NettyServer {
                             socketChannel.pipeline()
                                     .addLast("preLength", preLength)
                                     .addLast("encoder", encoder)
+                                    .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 0))
                                     .addLast("decoder", decoder)
+                                    .addLast(new IdleStateHandler(readerIdleTime, writerIdleTime, allIdleTime, TimeUnit.SECONDS))
                                     .addLast("serverHandler", serverHandler);
                         }
                     });

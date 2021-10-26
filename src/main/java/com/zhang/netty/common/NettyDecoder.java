@@ -16,7 +16,7 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
     private static final int HEADER_SIZE = 6;
 
     // 请求/响应体长度
-    private static final int BODY_SIZE = 10 * 1024 * 1024;
+    private static final int BODY_SIZE = 10485760; //10MB
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) throws Exception {
@@ -34,8 +34,8 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         if (checkSum) {
             dataLength -= NettyProtocol.CHECK_SUM_LENGTH;
         }
-        if (dataLength <= 0) {
-            throw new DirtyStreamException(String.format("Dirty input stream, dataLength[%d] <= 0", dataLength));
+        if (dataLength <= 0 || dataLength > BODY_SIZE) {
+            throw new DirtyStreamException(String.format("Dirty input stream, dataLength[%d] doesn't between (0, MAX_BODY_SIZE]", dataLength));
         }
         byte[] data = new byte[dataLength];
         in.readBytes(data);
@@ -52,7 +52,7 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         byte[] frame = new byte[endIndex - startIndex];
         in.getBytes(startIndex, frame, 0, endIndex - startIndex);
         byte[] actualCheckSum = NettyUtil.getCheckSum(frame);
-        if (!NettyUtil.bytesEquals(expectedCheckSum, actualCheckSum)) {
+        if (NettyUtil.bytesEquals(expectedCheckSum, actualCheckSum)) {
             throw new DirtyStreamException("Dirty input stream, check sum error");
         }
     }

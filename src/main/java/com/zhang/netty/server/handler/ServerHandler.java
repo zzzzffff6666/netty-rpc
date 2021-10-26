@@ -15,7 +15,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("Channel is active, {}", ctx.channel());
-        //ctx.writeAndFlush(getProtocol("I'm server!"));
+        ctx.writeAndFlush(getProtocol("I'm server!"));
     }
 
     @Override
