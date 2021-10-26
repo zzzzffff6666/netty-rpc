@@ -9,6 +9,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldPrepender;
 
 import java.net.InetSocketAddress;
 
@@ -23,6 +24,7 @@ public class NettyClient {
 
     public void connect() throws Exception {
         NioEventLoopGroup group = new NioEventLoopGroup();
+        final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
         final ClientHandler clientHandler = new ClientHandler();
@@ -36,6 +38,7 @@ public class NettyClient {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
+                                    .addLast("preLength", preLength)
                                     .addLast("encoder", encoder)
                                     .addLast("decoder", decoder)
                                     .addLast("clientHandler", clientHandler);

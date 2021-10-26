@@ -1,6 +1,6 @@
-package com.zhang.netty.common;
+package com.zhang.netty.enums;
 
-public enum NettyResponseStatus {
+public enum ResponseStatus {
     SUCCESS("ok"),
     CLIENT_SEND_ERROR("client_send_error"),
     TIME_OUT("time_out"),
@@ -8,7 +8,7 @@ public enum NettyResponseStatus {
 
     private final String message;
 
-    NettyResponseStatus(String message) {
+    ResponseStatus(String message) {
         this.message = message;
     }
 

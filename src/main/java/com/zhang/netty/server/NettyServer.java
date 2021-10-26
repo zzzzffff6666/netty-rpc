@@ -9,10 +9,15 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldPrepender;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 
 public class NettyServer {
+    private static final Logger log = LogManager.getLogger(NettyServer.class);
+
     private int port;
 
     public NettyServer(int port) {
@@ -20,7 +25,11 @@ public class NettyServer {
     }
 
     public void serve() throws Exception {
+        log.debug("Server start ******** DEBUG");
+        log.info("Server start ******** INFO");
+        log.error("Server start ******** ERROR");
         NioEventLoopGroup group = new NioEventLoopGroup();
+        final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
         final ServerHandler serverHandler = new ServerHandler();
@@ -34,6 +43,7 @@ public class NettyServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
+                                    .addLast("preLength", preLength)
                                     .addLast("encoder", encoder)
                                     .addLast("decoder", decoder)
                                     .addLast("serverHandler", serverHandler);

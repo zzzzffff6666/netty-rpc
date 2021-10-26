@@ -1,27 +1,30 @@
 package com.zhang.netty.common;
 
+import com.zhang.netty.enums.NettyApiType;
+import com.zhang.netty.enums.ResponseStatus;
+
 public class NettyResponse extends NettyProtocol {
-    private NettyResponseStatus nettyResponseStatus = NettyResponseStatus.SUCCESS;
+    private ResponseStatus responseStatus = ResponseStatus.SUCCESS;
     private String errorMsg;
 
     public NettyResponse(byte magic, short apiKey, byte attribute, byte[] data) {
-        super(magic, NettyProtocolType.RESPONSE, apiKey, attribute, data);
+        super(magic, NettyApiType.RESPONSE.getType(), apiKey, attribute, data);
     }
 
     public NettyResponse(byte magic, short apiKey, byte[] data) {
-        super(magic, NettyProtocolType.RESPONSE, apiKey, data);
+        super(magic, NettyApiType.RESPONSE.getType(), apiKey, data);
     }
 
     public NettyResponse(short apiKey, byte[] data) {
-        super(NettyProtocolType.RESPONSE, apiKey, data);
+        super(NettyApiType.RESPONSE.getType(), apiKey, data);
     }
 
-    public NettyResponseStatus getNettyResponseStatus() {
-        return nettyResponseStatus;
+    public ResponseStatus getResponseStatus() {
+        return responseStatus;
     }
 
-    public void setNettyResponseStatus(NettyResponseStatus nettyResponseStatus) {
-        this.nettyResponseStatus = nettyResponseStatus;
+    public void setResponseStatus(ResponseStatus responseStatus) {
+        this.responseStatus = responseStatus;
     }
 
     public String getErrorMsg() {

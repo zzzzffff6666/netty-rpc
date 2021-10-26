@@ -1,5 +1,6 @@
 package com.zhang.netty.common;
 
+import com.zhang.netty.enums.NettyApiType;
 import com.zhang.netty.exception.DirtyStreamException;
 import com.zhang.netty.util.NettyUtil;
 import io.netty.buffer.ByteBuf;
@@ -18,12 +19,12 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
     private static final int BODY_SIZE = 10 * 1024 * 1024;
 
     @Override
-    protected void decode(ChannelHandlerContext chc, ByteBuf in, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) throws Exception {
         if (in.readableBytes() < HEADER_SIZE) {
             throw new DirtyStreamException(String.format("Dirty input stream, readableBytes[%d] < HEADER_SIZE[%d]", in.readableBytes(), HEADER_SIZE));
         }
         int startIndex = in.readerIndex();
-        int totalLength = in.readableBytes();
+        int totalLength = in.readInt();
         byte magic = in.readByte();
         byte apiType = in.readByte();
         short apiKey = in. readShort();
@@ -52,16 +53,16 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         in.getBytes(startIndex, frame, 0, endIndex - startIndex);
         byte[] actualCheckSum = NettyUtil.getCheckSum(frame);
         if (!NettyUtil.bytesEquals(expectedCheckSum, actualCheckSum)) {
-            throw new DirtyStreamException("Dirty input stream, check sun error");
+            throw new DirtyStreamException("Dirty input stream, check sum error");
         }
     }
 
     private void addProtocol(byte magic, byte apiType, short apiKey, byte attribute, byte[] data, List<Object> list) {
-        if (apiType == NettyProtocolType.RESPONSE) {
+        if (apiType == NettyApiType.RESPONSE.getType()) {
             list.add(new NettyResponse(magic, apiKey, attribute, data));
-        } else if (apiType == NettyProtocolType.REQUEST) {
+        } else if (apiType == NettyApiType.REQUEST.getType()) {
             list.add(new NettyRequest(magic, apiKey, attribute, data));
-        } else if (apiType == NettyProtocolType.EXCEPTION) {
+        } else if (apiType == NettyApiType.EXCEPTION.getType()) {
             list.add(new NettyResponse(magic, apiKey, attribute, data));
         }
     }

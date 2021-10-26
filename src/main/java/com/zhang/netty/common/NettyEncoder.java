@@ -10,7 +10,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public class NettyEncoder extends MessageToByteEncoder<NettyProtocol> {
 
     @Override
-    protected void encode(ChannelHandlerContext chc, NettyProtocol msg, ByteBuf out) {
+    protected void encode(ChannelHandlerContext ctx, NettyProtocol msg, ByteBuf out) {
         int index = out.writerIndex();
         out.writeByte(msg.getMagic());
         out.writeByte(msg.getApiType());
