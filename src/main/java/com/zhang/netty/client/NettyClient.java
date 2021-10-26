@@ -56,7 +56,7 @@ public class NettyClient {
             ChannelFuture cf = bs.connect().sync();
             cf.channel().closeFuture().sync();
         } finally {
-            group.shutdownGracefully().sync();
+            group.shutdownGracefully();
         }
     }
 

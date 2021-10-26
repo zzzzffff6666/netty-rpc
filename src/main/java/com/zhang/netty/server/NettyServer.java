@@ -30,7 +30,8 @@ public class NettyServer {
     }
 
     public void serve() throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup();
+        NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
@@ -38,7 +39,7 @@ public class NettyServer {
         try {
             ServerBootstrap sbs = new ServerBootstrap();
             sbs
-                    .group(group)
+                    .group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
@@ -57,7 +58,8 @@ public class NettyServer {
             System.out.println(NettyServer.class.getName() + " started and listen on " + cf.channel().localAddress());
             cf.channel().closeFuture().sync();
         } finally {
-            group.shutdownGracefully().sync();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
 
