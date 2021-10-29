@@ -1,7 +1,7 @@
 package com.zhang.netty.server.handler;
 
-import com.zhang.netty.common.AttributeFunction;
-import com.zhang.netty.common.NettyProtocol;
+import com.zhang.netty.protocol.AttributeFunction;
+import com.zhang.netty.protocol.NettyProtocol;
 import com.zhang.netty.enums.NettyApiType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -44,6 +44,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public NettyProtocol getProtocol(String data) {
-        return new NettyProtocol(NettyApiType.REQUEST.getType(), (short) 0, AttributeFunction.CHECK_SUM, data.getBytes(StandardCharsets.UTF_8));
+        return NettyProtocol.builder()
+                .apiType(NettyApiType.REQUEST.getType())
+                .apiKey((short) 0)
+                .attribute(AttributeFunction.CHECK_SUM)
+                .data(data.getBytes(StandardCharsets.UTF_8))
+                .build();
     }
 }

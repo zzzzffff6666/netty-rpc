@@ -1,4 +1,4 @@
-package com.zhang.netty.common;
+package com.zhang.netty.protocol;
 
 public class NettyProtocol {
     public static final byte MAGIC_V1 = 1;
@@ -63,5 +63,49 @@ public class NettyProtocol {
 
     public byte[] getData() {
         return data;
+    }
+
+    public static NettyProtocol.NettyProtocolBuilder builder() {
+        return new NettyProtocol.NettyProtocolBuilder();
+    }
+
+    public static class NettyProtocolBuilder {
+        private byte magic;
+        private byte apiType;
+        private short apiKey;
+        private byte attribute;
+        private byte[] data;
+
+        NettyProtocolBuilder() {
+        }
+
+        public NettyProtocol.NettyProtocolBuilder magic(byte magic) {
+            this.magic = magic;
+            return this;
+        }
+
+        public NettyProtocol.NettyProtocolBuilder apiType(byte apiType) {
+            this.apiType = apiType;
+            return this;
+        }
+
+        public NettyProtocol.NettyProtocolBuilder apiKey(short apiKey) {
+            this.apiKey = apiKey;
+            return this;
+        }
+
+        public NettyProtocol.NettyProtocolBuilder attribute(byte attribute) {
+            this.attribute = attribute;
+            return this;
+        }
+
+        public NettyProtocol.NettyProtocolBuilder data(byte[] data) {
+            this.data = data;
+            return this;
+        }
+
+        public NettyProtocol build() {
+            return new NettyProtocol(this.magic, this.apiType, this.apiKey, this.attribute, this.data);
+        }
     }
 }

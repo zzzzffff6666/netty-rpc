@@ -1,4 +1,4 @@
-package com.zhang.netty.common;
+package com.zhang.netty.protocol;
 
 public class AttributeFunction {
     public static final byte NO_FUNCTION = (byte)0x00;

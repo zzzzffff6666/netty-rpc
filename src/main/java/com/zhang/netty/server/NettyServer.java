@@ -1,7 +1,7 @@
 package com.zhang.netty.server;
 
-import com.zhang.netty.common.NettyDecoder;
-import com.zhang.netty.common.NettyEncoder;
+import com.zhang.netty.protocol.NettyDecoder;
+import com.zhang.netty.protocol.NettyEncoder;
 import com.zhang.netty.server.handler.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class NettyServer {
-    private int writerIdleTime = 0;
-    private int readerIdleTime = 0;
-    private int allIdleTime = 60;
+    private static final int writerIdleTime = 0;
+    private static final int readerIdleTime = 0;
+    private static final int allIdleTime = 60;
 
     private int port;
 
@@ -55,7 +55,7 @@ public class NettyServer {
                         }
                     });
             ChannelFuture cf = sbs.bind().sync();
-            System.out.println(NettyServer.class.getName() + " started and listen on " + cf.channel().localAddress());
+            log.info("NettyServer start and listen on {}", cf.channel().localAddress());
             cf.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

@@ -1,4 +1,4 @@
-package com.zhang.netty.common;
+package com.zhang.netty.protocol;
 
 import com.zhang.netty.util.NettyUtil;
 import io.netty.buffer.ByteBuf;

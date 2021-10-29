@@ -1,8 +1,8 @@
 package com.zhang.netty.client;
 
 import com.zhang.netty.client.handler.ClientHandler;
-import com.zhang.netty.common.NettyDecoder;
-import com.zhang.netty.common.NettyEncoder;
+import com.zhang.netty.protocol.NettyDecoder;
+import com.zhang.netty.protocol.NettyEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -17,9 +17,9 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 public class NettyClient {
-    private int writerIdleTime = 0;
-    private int readerIdleTime = 0;
-    private int allIdleTime = 60;
+    private static final int writerIdleTime = 0;
+    private static final int readerIdleTime = 0;
+    private static final int allIdleTime = 60;
 
     private String host;
     private int port;

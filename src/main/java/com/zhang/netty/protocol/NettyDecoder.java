@@ -1,6 +1,5 @@
-package com.zhang.netty.common;
+package com.zhang.netty.protocol;
 
-import com.zhang.netty.enums.NettyApiType;
 import com.zhang.netty.exception.DirtyStreamException;
 import com.zhang.netty.util.NettyUtil;
 import io.netty.buffer.ByteBuf;
@@ -58,12 +57,6 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
     }
 
     private void addProtocol(byte magic, byte apiType, short apiKey, byte attribute, byte[] data, List<Object> list) {
-        if (apiType == NettyApiType.RESPONSE.getType()) {
-            list.add(new NettyResponse(magic, apiKey, attribute, data));
-        } else if (apiType == NettyApiType.REQUEST.getType()) {
-            list.add(new NettyRequest(magic, apiKey, attribute, data));
-        } else if (apiType == NettyApiType.EXCEPTION.getType()) {
-            list.add(new NettyResponse(magic, apiKey, attribute, data));
-        }
+        list.add(new NettyProtocol(magic, apiType, apiKey, attribute, data));
     }
 }
