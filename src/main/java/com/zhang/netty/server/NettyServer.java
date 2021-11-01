@@ -1,8 +1,9 @@
 package com.zhang.netty.server;
 
-import com.zhang.netty.protocol.NettyDecoder;
-import com.zhang.netty.protocol.NettyEncoder;
-import com.zhang.netty.server.handler.ServerHandler;
+import com.zhang.netty.handler.ExceptionHandler;
+import com.zhang.netty.handler.NettyDecoder;
+import com.zhang.netty.handler.NettyEncoder;
+import com.zhang.netty.handler.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -32,6 +33,7 @@ public class NettyServer {
     public void serve() throws Exception {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
         final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
@@ -51,7 +53,8 @@ public class NettyServer {
                                     .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 0))
                                     .addLast("decoder", decoder)
                                     .addLast(new IdleStateHandler(readerIdleTime, writerIdleTime, allIdleTime, TimeUnit.SECONDS))
-                                    .addLast("serverHandler", serverHandler);
+                                    .addLast("serverHandler", serverHandler)
+                                    .addLast("exceptionHandler", exceptionHandler);
                         }
                     });
             ChannelFuture cf = sbs.bind().sync();

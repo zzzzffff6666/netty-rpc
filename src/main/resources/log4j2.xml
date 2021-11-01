@@ -3,7 +3,7 @@
     <Appenders>
         <Console name="S_out" target="SYSTEM_OUT">
             <Filters>
-                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL" />
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
                 <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
             </Filters>
             <!--这个都知道是输出日志的格式-->

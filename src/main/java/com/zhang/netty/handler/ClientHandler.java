@@ -1,4 +1,4 @@
-package com.zhang.netty.server.handler;
+package com.zhang.netty.handler;
 
 import com.zhang.netty.protocol.AttributeFunction;
 import com.zhang.netty.protocol.NettyProtocol;
@@ -10,25 +10,20 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-public class ServerHandler extends ChannelInboundHandlerAdapter {
+public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         log.info("Channel is active, {}", ctx.channel());
-        ctx.writeAndFlush(getProtocol("I'm server!"));
+        ctx.writeAndFlush(getProtocol("I'm client!"));
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyProtocol protocol = (NettyProtocol) msg;
-        log.info("Server received: {}", protocol.toString());
+        log.info("Client received: {}", protocol.toString());
         log.info("content: [{}]", new String(protocol.getData(), StandardCharsets.UTF_8));
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
+        throw new Exception("test");
     }
 
     @Override

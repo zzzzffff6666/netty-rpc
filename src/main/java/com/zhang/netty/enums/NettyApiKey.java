@@ -5,6 +5,7 @@ public enum NettyApiKey {
     DELETE((short) 2, "删除数据"),
     UPDATE((short) 3, "修改数据"),
     SELECT((short) 4, "查询数据"),
+    RESPONSE((short) 5, "请求响应"),
     OTHERS((short) 5, "其他操作");
 
     final short key;

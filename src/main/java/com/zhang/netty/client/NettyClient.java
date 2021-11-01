@@ -1,8 +1,9 @@
 package com.zhang.netty.client;
 
-import com.zhang.netty.client.handler.ClientHandler;
-import com.zhang.netty.protocol.NettyDecoder;
-import com.zhang.netty.protocol.NettyEncoder;
+import com.zhang.netty.handler.ClientHandler;
+import com.zhang.netty.handler.ExceptionHandler;
+import com.zhang.netty.handler.NettyDecoder;
+import com.zhang.netty.handler.NettyEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class NettyClient {
     private static final int writerIdleTime = 0;
     private static final int readerIdleTime = 0;
-    private static final int allIdleTime = 60;
+    private static final int allIdleTime = 30;
 
     private String host;
     private int port;
@@ -31,6 +32,7 @@ public class NettyClient {
 
     public void connect() throws Exception {
         NioEventLoopGroup group = new NioEventLoopGroup();
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
         final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
@@ -50,7 +52,8 @@ public class NettyClient {
                                     .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 0))
                                     .addLast("decoder", decoder)
                                     .addLast(new IdleStateHandler(readerIdleTime, writerIdleTime, allIdleTime, TimeUnit.SECONDS))
-                                    .addLast("clientHandler", clientHandler);
+                                    .addLast("clientHandler", clientHandler)
+                                    .addLast("exceptionHandler", exceptionHandler);
                         }
                     });
             ChannelFuture cf = bs.connect().sync();
