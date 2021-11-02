@@ -14,7 +14,7 @@ import java.util.List;
 @ChannelHandler.Sharable //可被安全共享
 public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
     // 请求/响应头长度
-    private static final int HEADER_SIZE = 6;
+    private static final int HEADER_SIZE = 5;
 
     // 请求/响应体长度
     private static final int BODY_SIZE = 10485760; //10MB
@@ -24,8 +24,8 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         if (in.readableBytes() < HEADER_SIZE) {
             throw new DirtyStreamException(String.format("Dirty input stream, readableBytes[%d] < HEADER_SIZE[%d]", in.readableBytes(), HEADER_SIZE));
         }
-        int startIndex = in.readerIndex();
         int totalLength = in.readInt();
+        int startIndex = in.readerIndex();
         byte magic = in.readByte();
         byte apiType = in.readByte();
         short apiKey = in. readShort();
@@ -53,7 +53,7 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         byte[] frame = new byte[endIndex - startIndex];
         in.getBytes(startIndex, frame, 0, endIndex - startIndex);
         byte[] actualCheckSum = NettyUtil.getCheckSum(frame);
-        if (NettyUtil.bytesEquals(expectedCheckSum, actualCheckSum)) {
+        if (!NettyUtil.bytesEquals(expectedCheckSum, actualCheckSum)) {
             throw new DirtyStreamException("Dirty input stream, check sum error");
         }
     }

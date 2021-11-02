@@ -23,7 +23,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         NettyProtocol protocol = (NettyProtocol) msg;
         log.info("Client received: {}", protocol.toString());
         log.info("content: [{}]", new String(protocol.getData(), StandardCharsets.UTF_8));
-        throw new Exception("test");
+        //throw new Exception("test");
     }
 
     @Override
