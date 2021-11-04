@@ -1,50 +1,49 @@
-package com.zhang.netty.server;
+package com.zhang.netty;
 
+import com.zhang.netty.handler.ClientHandler;
 import com.zhang.netty.handler.ExceptionHandler;
 import com.zhang.netty.handler.NettyDecoder;
 import com.zhang.netty.handler.NettyEncoder;
-import com.zhang.netty.handler.ServerHandler;
-import io.netty.bootstrap.ServerBootstrap;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
-public class NettyServer {
+public class NettyClient {
     private static final int writerIdleTime = 0;
     private static final int readerIdleTime = 0;
-    private static final int allIdleTime = 60;
+    private static final int allIdleTime = 30;
 
+    private String host;
     private int port;
 
-    public NettyServer(int port) {
+    public NettyClient(String host, int port) {
+        this.host = host;
         this.port = port;
     }
 
-    public void serve() throws Exception {
-        NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+    public void connect() throws Exception {
+        NioEventLoopGroup group = new NioEventLoopGroup();
         final ExceptionHandler exceptionHandler = new ExceptionHandler();
         final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
-        final ServerHandler serverHandler = new ServerHandler();
+        final ClientHandler clientHandler = new ClientHandler();
         try {
-            ServerBootstrap sbs = new ServerBootstrap();
-            sbs
-                    .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .localAddress(new InetSocketAddress(port))
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
+            Bootstrap bs = new Bootstrap();
+            bs
+                    .group(group)
+                    .channel(NioSocketChannel.class)
+                    .remoteAddress(new InetSocketAddress(host, port))
+                    .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
@@ -53,27 +52,27 @@ public class NettyServer {
                                     .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 0))
                                     .addLast("decoder", decoder)
                                     .addLast(new IdleStateHandler(readerIdleTime, writerIdleTime, allIdleTime, TimeUnit.SECONDS))
-                                    .addLast("serverHandler", serverHandler)
+                                    .addLast("clientHandler", clientHandler)
                                     .addLast("exceptionHandler", exceptionHandler);
                         }
                     });
-            ChannelFuture cf = sbs.bind().sync();
-            log.info("NettyServer start and listen on {}", cf.channel().localAddress());
+            ChannelFuture cf = bs.connect().sync();
             cf.channel().closeFuture().sync();
         } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+            group.shutdownGracefully();
         }
     }
 
     public static void main(String[] args) {
+        String host = "127.0.0.1";
         int port = 8000;
-        if (args.length >= 1) {
-            port = Integer.parseInt(args[0]);
+        if (args.length >= 2) {
+            host = args[0];
+            port = Integer.parseInt(args[1]);
         }
-        NettyServer ns = new NettyServer(port);
+
         try {
-            ns.serve();
+            new NettyClient(host, port).connect();
         } catch (Exception e) {
             e.printStackTrace();
         }
