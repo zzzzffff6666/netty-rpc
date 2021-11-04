@@ -26,7 +26,7 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
         int totalLength = in.readInt();
         int startIndex = in.readerIndex();
-        byte magic = in.readByte();
+        byte version = in.readByte();
         byte apiType = in.readByte();
         short apiKey = in. readShort();
         byte attribute = in.readByte();
@@ -43,7 +43,7 @@ public class NettyDecoder extends MessageToMessageDecoder<ByteBuf> {
         if (checkSum) {
             checkSum(in, startIndex);
         }
-        addProtocol(magic, apiType, apiKey, attribute, data, list);
+        addProtocol(version, apiType, apiKey, attribute, data, list);
     }
 
     private void checkSum(ByteBuf in, int startIndex) throws Exception {

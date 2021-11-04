@@ -8,9 +8,15 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class ClientHandler extends ChannelInboundHandlerAdapter {
+    private ExecutorService processGroup;
+
+    public ClientHandler(ExecutorService processGroup) {
+        this.processGroup = processGroup;
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {

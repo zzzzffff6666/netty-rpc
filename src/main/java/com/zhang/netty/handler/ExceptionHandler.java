@@ -1,7 +1,7 @@
 package com.zhang.netty.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.zhang.netty.data.Result;
+import com.zhang.netty.process.model.Result;
 import com.zhang.netty.protocol.enums.NettyApiKey;
 import com.zhang.netty.protocol.enums.NettyApiType;
 import com.zhang.netty.protocol.AttributeFunction;

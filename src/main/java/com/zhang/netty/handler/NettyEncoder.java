@@ -14,7 +14,7 @@ public class NettyEncoder extends MessageToByteEncoder<NettyProtocol> {
     @Override
     protected void encode(ChannelHandlerContext ctx, NettyProtocol msg, ByteBuf out) {
         int index = out.writerIndex();
-        out.writeByte(msg.getMagic());
+        out.writeByte(msg.getVersion());
         out.writeByte(msg.getApiType());
         out.writeShort(msg.getApiKey());
         out.writeByte(msg.getAttribute());
