@@ -1,4 +1,4 @@
-package com.zhang.netty.server;
+package com.zhang.netty;
 
 import com.zhang.netty.handler.ExceptionHandler;
 import com.zhang.netty.handler.NettyDecoder;
