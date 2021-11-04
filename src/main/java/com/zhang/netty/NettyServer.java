@@ -16,6 +16,9 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -24,20 +27,29 @@ public class NettyServer {
     private static final int readerIdleTime = 0;
     private static final int allIdleTime = 60;
 
+    private int coreThreadNum = Runtime.getRuntime().availableProcessors() * 2;
+    private int maxThreadNum = 64;
+    private int queueNum = 64;
+    private String threadName = "zhang";
+
     private int port;
 
-    public NettyServer(int port) {
+    public NettyServer(int port, String threadName) {
         this.port = port;
+        this.threadName = threadName;
     }
 
     public void serve() throws Exception {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+        ExecutorService processGroup = new ThreadPoolExecutor(coreThreadNum, maxThreadNum, 30L, TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(queueNum), r -> new Thread(r, "NettyServer-" + threadName + "-Processor"));
+
         final ExceptionHandler exceptionHandler = new ExceptionHandler();
         final LengthFieldPrepender preLength = new LengthFieldPrepender(4, false);
         final NettyDecoder decoder = new NettyDecoder();
         final NettyEncoder encoder = new NettyEncoder();
-        final ServerHandler serverHandler = new ServerHandler();
+        final ServerHandler serverHandler = new ServerHandler(processGroup);
         try {
             ServerBootstrap sbs = new ServerBootstrap();
             sbs
@@ -68,10 +80,16 @@ public class NettyServer {
 
     public static void main(String[] args) {
         int port = 8000;
+        String name = "zhang";
+
         if (args.length >= 1) {
             port = Integer.parseInt(args[0]);
+            if (args.length >= 2) {
+                name = args[1];
+            }
         }
-        NettyServer ns = new NettyServer(port);
+
+        NettyServer ns = new NettyServer(port, name);
         try {
             ns.serve();
         } catch (Exception e) {

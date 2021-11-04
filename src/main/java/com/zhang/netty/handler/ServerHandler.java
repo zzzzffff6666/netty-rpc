@@ -16,6 +16,10 @@ import java.util.concurrent.ExecutorService;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private ExecutorService processGroup;
 
+    public ServerHandler(ExecutorService processGroup) {
+        this.processGroup = processGroup;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("Channel is active, {}", ctx.channel());

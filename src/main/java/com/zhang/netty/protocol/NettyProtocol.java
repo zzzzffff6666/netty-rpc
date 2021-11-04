@@ -1,17 +1,15 @@
 package com.zhang.netty.protocol;
 
 public class NettyProtocol {
-    public static final byte MAGIC_V1 = 1;
-
     // 协议头信息
-    public static final int MAGIC_LENGTH = 1;
+    public static final int VERSION_LENGTH = 1;
     public static final int API_TYPE_LENGTH = 1;
     public static final int API_KEY_LENGTH = 2;
     public static final int ATTRIBUTE_LENGTH = 1;
     public static final int CHECK_SUM_LENGTH = 4;
 
     // 版本
-    protected byte magic;
+    protected byte version;
     // 请求类型
     protected byte apiType;
     // 请求Key
@@ -21,20 +19,12 @@ public class NettyProtocol {
     // 请求内容
     protected byte[] data;
 
-    public NettyProtocol(byte apiType, short apiKey, byte[] data) {
-        this(MAGIC_V1, apiType, apiKey, AttributeFunction.NO_FUNCTION, data);
+    public NettyProtocol(byte version, byte apiType, short apiKey, byte[] data) {
+        this(version, apiType, apiKey, AttributeFunction.NO_FUNCTION, data);
     }
 
-    public NettyProtocol(byte apiType, short apiKey, byte attribute, byte[] data) {
-        this(MAGIC_V1, apiType, apiKey, attribute, data);
-    }
-
-    public NettyProtocol(byte magic, byte apiType, short apiKey, byte[] data) {
-        this(magic, apiType, apiKey, AttributeFunction.NO_FUNCTION, data);
-    }
-
-    public NettyProtocol(byte magic, byte apiType, short apiKey, byte attribute, byte[] data) {
-        this.magic = magic;
+    public NettyProtocol(byte version, byte apiType, short apiKey, byte attribute, byte[] data) {
+        this.version = version;
         this.apiType = apiType;
         this.apiKey = apiKey;
         this.attribute = attribute;
@@ -42,11 +32,11 @@ public class NettyProtocol {
     }
 
     public static int getBasicHeaderLength() {
-        return MAGIC_LENGTH + API_TYPE_LENGTH + API_KEY_LENGTH + ATTRIBUTE_LENGTH;
+        return VERSION_LENGTH + API_TYPE_LENGTH + API_KEY_LENGTH + ATTRIBUTE_LENGTH;
     }
 
-    public byte getMagic() {
-        return magic;
+    public byte getVersion() {
+        return version;
     }
 
     public byte getApiType() {
@@ -70,7 +60,7 @@ public class NettyProtocol {
     }
 
     public static class NettyProtocolBuilder {
-        private byte magic;
+        private byte version;
         private byte apiType;
         private short apiKey;
         private byte attribute;
@@ -79,8 +69,8 @@ public class NettyProtocol {
         NettyProtocolBuilder() {
         }
 
-        public NettyProtocol.NettyProtocolBuilder magic(byte magic) {
-            this.magic = magic;
+        public NettyProtocol.NettyProtocolBuilder version(byte version) {
+            this.version = version;
             return this;
         }
 
@@ -105,7 +95,7 @@ public class NettyProtocol {
         }
 
         public NettyProtocol build() {
-            return new NettyProtocol(this.magic, this.apiType, this.apiKey, this.attribute, this.data);
+            return new NettyProtocol(this.version, this.apiType, this.apiKey, this.attribute, this.data);
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.zhang.netty.data;
+package com.zhang.netty.process.model;
 
 import java.util.HashMap;
 import java.util.Map;
