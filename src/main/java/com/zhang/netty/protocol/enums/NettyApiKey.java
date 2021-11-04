@@ -1,4 +1,4 @@
-package com.zhang.netty.enums;
+package com.zhang.netty.protocol.enums;
 
 public enum NettyApiKey {
     INSERT((short) 1, "添加资源"),

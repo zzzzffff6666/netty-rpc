@@ -3,7 +3,7 @@ package com.zhang.netty.handler;
 import com.zhang.netty.exception.DirtyStreamException;
 import com.zhang.netty.protocol.AttributeFunction;
 import com.zhang.netty.protocol.NettyProtocol;
-import com.zhang.netty.util.NettyUtil;
+import com.zhang.netty.protocol.util.NettyUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

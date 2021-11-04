@@ -2,17 +2,19 @@ package com.zhang.netty.handler;
 
 import com.zhang.netty.protocol.AttributeFunction;
 import com.zhang.netty.protocol.NettyProtocol;
-import com.zhang.netty.enums.NettyApiType;
+import com.zhang.netty.protocol.enums.NettyApiType;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @ChannelHandler.Sharable
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+    private ExecutorService processGroup;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {

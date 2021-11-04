@@ -1,4 +1,4 @@
-package com.zhang.netty.util;
+package com.zhang.netty.protocol.util;
 
 import java.util.zip.Adler32;
 

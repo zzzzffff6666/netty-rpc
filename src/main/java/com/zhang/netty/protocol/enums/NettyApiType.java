@@ -1,4 +1,4 @@
-package com.zhang.netty.enums;
+package com.zhang.netty.protocol.enums;
 
 public enum NettyApiType {
     REQUEST((byte) 0x00),
