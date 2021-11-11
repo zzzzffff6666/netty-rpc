@@ -1,5 +1,6 @@
 package com.zhang.netty.process;
 
+import com.zhang.netty.enums.NettyVersion;
 import com.zhang.netty.process.model.EventContext;
 import com.zhang.netty.process.strategy.EventProcessorV1;
 import com.zhang.netty.protocol.NettyProtocol;
@@ -13,7 +14,7 @@ public class ProcessorFactory {
 
     @PostConstruct
     private void init() {
-        processorMap.put(EventProcessorV1.VERSION, new EventProcessorV1());
+        processorMap.put(NettyVersion.TIAN.getVersion(), new EventProcessorV1());
     }
 
     public static void processEvent(NettyProtocol protocol, EventContext eventContext) {

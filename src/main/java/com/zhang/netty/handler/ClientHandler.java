@@ -1,13 +1,15 @@
 package com.zhang.netty.handler;
 
+import com.zhang.netty.process.ProcessorFactory;
+import com.zhang.netty.process.model.EventContext;
 import com.zhang.netty.protocol.AttributeFunction;
 import com.zhang.netty.protocol.NettyProtocol;
-import com.zhang.netty.protocol.enums.NettyApiType;
+import com.zhang.netty.protocol.NettyApiType;
+import com.zhang.netty.util.NettyUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
 @Slf4j
@@ -20,36 +22,43 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.info("Channel is active, {}", ctx.channel());
-        ctx.writeAndFlush(getProtocol("I'm client!"));
+        log.info("Channel is active, name = {}", ctx.name());
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyProtocol protocol = (NettyProtocol) msg;
-        log.info("Client received: {}", protocol.toString());
-        log.info("content: [{}]", new String(protocol.getData(), StandardCharsets.UTF_8));
-        //throw new Exception("test");
+        log.info("content: [{}]", NettyUtil.bytes2data(protocol.getData()));
+        EventContext eventContext = new EventContext(ctx);
+        if (protocol.getApiType() == NettyApiType.REQUEST) {
+            processGroup.execute(() -> ProcessorFactory.processEvent(protocol, eventContext));
+        } else if (protocol.getApiType() == NettyApiType.RESPONSE) {
+
+        } else if (protocol.getApiType() == NettyApiType.EXCEPTION) {
+
+        } else {
+
+        }
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        log.info("channel unregistered");
+        log.info("channel unregistered, name = {}", ctx.name());
         ctx.close();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("channel inactive");
+        log.info("channel inactive, name = {}", ctx.name());
         ctx.close();
     }
 
     public NettyProtocol getProtocol(String data) {
         return NettyProtocol.builder()
-                .apiType(NettyApiType.REQUEST.getType())
+                .apiType(NettyApiType.REQUEST)
                 .apiKey((short) 0)
                 .attribute(AttributeFunction.CHECK_SUM)
-                .data(data.getBytes(StandardCharsets.UTF_8))
+                .data(NettyUtil.data2bytes(data))
                 .build();
     }
 }

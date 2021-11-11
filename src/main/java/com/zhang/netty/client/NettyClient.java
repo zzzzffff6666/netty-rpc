@@ -1,5 +1,6 @@
-package com.zhang.netty;
+package com.zhang.netty.client;
 
+import com.zhang.netty.config.ConfigLoader;
 import com.zhang.netty.handler.ClientHandler;
 import com.zhang.netty.handler.ExceptionHandler;
 import com.zhang.netty.handler.NettyDecoder;
@@ -21,22 +22,28 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class NettyClient {
-    private static final int writerIdleTime = 0;
-    private static final int readerIdleTime = 0;
-    private static final int allIdleTime = 30;
+    private final String server;
+    private final int port;
 
-    private int coreThreadNum = Runtime.getRuntime().availableProcessors() * 2;
-    private int maxThreadNum = 64;
-    private int queueNum = 64;
-    private String threadName = "zhang";
+    private final int coreThreadNum;
+    private final int maxThreadNum;
+    private final int queueNum;
+    private final String threadName;
 
-    private String host;
-    private int port;
+    private final int writerIdleTime;
+    private final int readerIdleTime;
+    private final int allIdleTime;
 
-    public NettyClient(String host, int port, String threadName) {
-        this.host = host;
-        this.port = port;
-        this.threadName = threadName;
+    public NettyClient() {
+        server = ConfigLoader.getInstance().getServer();
+        port = ConfigLoader.getInstance().getPort();
+        threadName = ConfigLoader.getInstance().getThreadName();
+        coreThreadNum = ConfigLoader.getInstance().getCoreThreadNum();
+        maxThreadNum = ConfigLoader.getInstance().getMaxThreadNum();
+        queueNum = ConfigLoader.getInstance().getQueueNum();
+        writerIdleTime = ConfigLoader.getInstance().getWriterIdleTime();
+        readerIdleTime = ConfigLoader.getInstance().getReaderIdleTime();
+        allIdleTime = ConfigLoader.getInstance().getAllIdleTime();
     }
 
     public void connect() throws Exception {
@@ -54,7 +61,7 @@ public class NettyClient {
             bs
                     .group(group)
                     .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress(host, port))
+                    .remoteAddress(new InetSocketAddress(server, port))
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -72,27 +79,6 @@ public class NettyClient {
             cf.channel().closeFuture().sync();
         } finally {
             group.shutdownGracefully();
-        }
-    }
-
-    public static void main(String[] args) {
-        String host = "127.0.0.1";
-        int port = 8000;
-        String name = "zhang";
-
-        if (args.length >= 2) {
-            host = args[0];
-            port = Integer.parseInt(args[1]);
-            if (args.length >= 3) {
-                name = args[2];
-            }
-        }
-
-        NettyClient nettyClient = new NettyClient(host, port, name);
-        try {
-            nettyClient.connect();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

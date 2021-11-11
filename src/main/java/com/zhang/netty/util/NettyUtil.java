@@ -1,5 +1,6 @@
-package com.zhang.netty.protocol.util;
+package com.zhang.netty.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.zip.Adler32;
 
 public class NettyUtil {
@@ -31,5 +32,13 @@ public class NettyUtil {
             }
         }
         return equals;
+    }
+
+    public static byte[] data2bytes(String data) {
+        return data.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public static String bytes2data(byte[] bytes) {
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 }
