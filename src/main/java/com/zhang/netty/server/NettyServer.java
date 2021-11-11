@@ -24,16 +24,16 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class NettyServer {
-    private int port;
+    private final int port;
 
-    private int coreThreadNum;
-    private int maxThreadNum;
-    private int queueNum;
-    private String threadName;
+    private final int coreThreadNum;
+    private final int maxThreadNum;
+    private final int queueNum;
+    private final String threadName;
 
-    private int writerIdleTime;
-    private int readerIdleTime;
-    private int allIdleTime;
+    private final int writerIdleTime;
+    private final int readerIdleTime;
+    private final int allIdleTime;
 
     public NettyServer() {
         port = ConfigLoader.getInstance().getPort();
