@@ -1,8 +1,11 @@
 package com.zhang.netty.handler;
 
+import com.zhang.netty.process.ProcessorFactory;
+import com.zhang.netty.process.model.EventContext;
 import com.zhang.netty.protocol.AttributeFunction;
 import com.zhang.netty.protocol.NettyProtocol;
-import com.zhang.netty.protocol.enums.NettyApiType;
+import com.zhang.netty.enums.NettyApiType;
+import com.zhang.netty.util.NettyUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -22,26 +25,27 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Channel is active, {}", ctx.channel());
+        log.info("Channel is active, name = {}", ctx.name());
         ctx.writeAndFlush(getProtocol("I'm server!"));
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         NettyProtocol protocol = (NettyProtocol) msg;
-        log.info("Server received: {}", protocol.toString());
         log.info("content: [{}]", new String(protocol.getData(), StandardCharsets.UTF_8));
+        EventContext eventContext = new EventContext(ctx);
+        ProcessorFactory.processEvent(protocol, eventContext);
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        log.info("channel unregistered");
+        log.info("channel unregistered, name = {}", ctx.name());
         ctx.close();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("channel inactive");
+        log.info("channel inactive, name = {}", ctx.name());
         ctx.close();
     }
 
@@ -50,7 +54,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 .apiType(NettyApiType.REQUEST.getType())
                 .apiKey((short) 0)
                 .attribute(AttributeFunction.CHECK_SUM)
-                .data(data.getBytes(StandardCharsets.UTF_8))
+                .data(NettyUtil.data2bytes(data))
                 .build();
     }
 }

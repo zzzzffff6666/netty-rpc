@@ -1,5 +1,6 @@
-package com.zhang.netty;
+package com.zhang.netty.server;
 
+import com.zhang.netty.config.ConfigLoader;
 import com.zhang.netty.handler.ExceptionHandler;
 import com.zhang.netty.handler.NettyDecoder;
 import com.zhang.netty.handler.NettyEncoder;
@@ -23,20 +24,26 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class NettyServer {
-    private static final int writerIdleTime = 0;
-    private static final int readerIdleTime = 0;
-    private static final int allIdleTime = 60;
-
-    private int coreThreadNum = Runtime.getRuntime().availableProcessors() * 2;
-    private int maxThreadNum = 64;
-    private int queueNum = 64;
-    private String threadName = "zhang";
-
     private int port;
 
-    public NettyServer(int port, String threadName) {
-        this.port = port;
-        this.threadName = threadName;
+    private int coreThreadNum;
+    private int maxThreadNum;
+    private int queueNum;
+    private String threadName;
+
+    private int writerIdleTime;
+    private int readerIdleTime;
+    private int allIdleTime;
+
+    public NettyServer() {
+        port = ConfigLoader.getInstance().getPort();
+        threadName = ConfigLoader.getInstance().getThreadName();
+        coreThreadNum = ConfigLoader.getInstance().getCoreThreadNum();
+        maxThreadNum = ConfigLoader.getInstance().getMaxThreadNum();
+        queueNum = ConfigLoader.getInstance().getQueueNum();
+        writerIdleTime = ConfigLoader.getInstance().getWriterIdleTime();
+        readerIdleTime = ConfigLoader.getInstance().getReaderIdleTime();
+        allIdleTime = ConfigLoader.getInstance().getAllIdleTime();
     }
 
     public void serve() throws Exception {
@@ -75,25 +82,6 @@ public class NettyServer {
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
-        }
-    }
-
-    public static void main(String[] args) {
-        int port = 8000;
-        String name = "zhang";
-
-        if (args.length >= 1) {
-            port = Integer.parseInt(args[0]);
-            if (args.length >= 2) {
-                name = args[1];
-            }
-        }
-
-        NettyServer ns = new NettyServer(port, name);
-        try {
-            ns.serve();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
